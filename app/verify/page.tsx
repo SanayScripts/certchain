@@ -31,11 +31,9 @@ export default function VerifyPage() {
     setStatus("verifying");
 
     try {
-      // Use a public Sepolia RPC — no wallet needed for reads
-      const provider = new ethers.JsonRpcProvider("https://rpc.sepolia.org");
+      const provider = new ethers.JsonRpcProvider("https://ethereum-sepolia-rpc.publicnode.com");
       const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, provider);
 
-      // Must hash identically to how it was issued
       const raw = JSON.stringify({
         name: form.name.trim().toLowerCase(),
         course: form.course.trim().toLowerCase(),
@@ -51,9 +49,13 @@ export default function VerifyPage() {
         setStatus("invalid");
       } else {
         const date = new Date(Number(timestamp) * 1000);
-        setIssuedAt(date.toLocaleDateString("en-GB", {
-          day: "2-digit", month: "short", year: "numeric"
-        }));
+        setIssuedAt(
+          date.toLocaleDateString("en-GB", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+          })
+        );
         setStatus("valid");
       }
     } catch {
@@ -62,7 +64,7 @@ export default function VerifyPage() {
   }
 
   return (
-    <div style={{ padding: "3rem 2rem", maxWidth: "960px", margin: "0 auto" }}>
+    <div style={{ padding: "3rem 2rem", maxWidth: "1100px", margin: "0 auto" }}>
       {/* Page title */}
       <h1 style={{ fontSize: "clamp(2.5rem, 6vw, 4rem)", marginBottom: "0.25rem" }}>
         VERIFY A CERTIFICATE
@@ -72,31 +74,34 @@ export default function VerifyPage() {
         Confirm the authenticity of digital credentials using real-time blockchain verification.
       </p>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: "2rem", alignItems: "start", flexWrap: "wrap" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "3fr 1fr", gap: "2rem", alignItems: "start" }}>
         {/* Form card */}
         <div className="card" style={{ padding: "2rem" }}>
           <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
-              <div>
-                <label className="input-label">Recipient Name</label>
-                <input
-                  className="input-field"
-                  placeholder="FULL NAME"
-                  value={form.name}
-                  onChange={(e) => setForm({ ...form, name: e.target.value })}
-                />
-              </div>
-              <div>
-                <label className="input-label">Course / Credential Title</label>
-                <input
-                  className="input-field"
-                  placeholder="CREDENTIAL TITLE"
-                  value={form.course}
-                  onChange={(e) => setForm({ ...form, course: e.target.value })}
-                />
-              </div>
+
+            {/* Name */}
+            <div>
+              <label className="input-label">Recipient Name</label>
+              <input
+                className="input-field"
+                placeholder="FULL NAME"
+                value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
+              />
             </div>
 
+            {/* Course */}
+            <div>
+              <label className="input-label">Course / Credential Title</label>
+              <input
+                className="input-field"
+                placeholder="CREDENTIAL TITLE"
+                value={form.course}
+                onChange={(e) => setForm({ ...form, course: e.target.value })}
+              />
+            </div>
+
+            {/* Organisation + Date side by side */}
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
               <div>
                 <label className="input-label">Issuing Organisation</label>
@@ -118,6 +123,7 @@ export default function VerifyPage() {
               </div>
             </div>
 
+            {/* Issuer wallet */}
             <div>
               <label className="input-label">
                 Issuer Wallet Address{" "}
@@ -146,9 +152,16 @@ export default function VerifyPage() {
             </button>
           </div>
 
-          {/* Result states */}
+          {/* Valid */}
           {status === "valid" && (
-            <div style={{ marginTop: "1.5rem", border: "3px solid #000", padding: "1.5rem", backgroundColor: "#FFDD00" }}>
+            <div
+              style={{
+                marginTop: "1.5rem",
+                border: "3px solid #000",
+                padding: "1.5rem",
+                backgroundColor: "#FFDD00",
+              }}
+            >
               <div
                 style={{
                   fontFamily: "'Space Grotesk', sans-serif",
@@ -187,6 +200,7 @@ export default function VerifyPage() {
             </div>
           )}
 
+          {/* Invalid */}
           {status === "invalid" && (
             <div
               style={{
@@ -208,11 +222,13 @@ export default function VerifyPage() {
                 ✕ Certificate Not Found
               </div>
               <div style={{ fontSize: "0.875rem", fontWeight: 700, lineHeight: 1.6 }}>
-                No matching record found in the ledger. The details may be incorrect or this certificate was never issued on-chain.
+                No matching record found in the ledger. The details may be incorrect or
+                this certificate was never issued on-chain.
               </div>
             </div>
           )}
 
+          {/* Error */}
           {status === "error" && (
             <div
               style={{
@@ -231,8 +247,8 @@ export default function VerifyPage() {
           )}
         </div>
 
-        {/* Verification stamp sidebar */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem", minWidth: "220px" }}>
+        {/* Sidebar */}
+        <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
           <div
             style={{
               backgroundColor: "#FFDD00",
@@ -273,8 +289,16 @@ export default function VerifyPage() {
 
           <div className="card">
             {[
-              { icon: "◈", title: "SHA-256 Hashing", body: "Certificate data is hashed before hitting the chain." },
-              { icon: "◎", title: "Immutable Record", body: "Once written, no one can alter or delete the entry." },
+              {
+                icon: "◈",
+                title: "SHA-256 Hashing",
+                body: "Certificate data is hashed before hitting the chain.",
+              },
+              {
+                icon: "◎",
+                title: "Immutable Record",
+                body: "Once written, no one can alter or delete the entry.",
+              },
             ].map((item) => (
               <div key={item.title} style={{ marginBottom: "1rem" }}>
                 <div

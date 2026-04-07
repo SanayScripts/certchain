@@ -49,7 +49,11 @@ export default function IssuePage() {
     setErrorMsg(null);
 
     try {
-      const provider = new ethers.BrowserProvider(window.ethereum);
+      const provider = new ethers.BrowserProvider(window.ethereum, 11155111);
+      await window.ethereum.request({
+        method: "wallet_switchEthereumChain",
+        params: [{ chainId: "0xaa36a7" }], // 0xaa36a7 = Sepolia in hex
+      });
       const signer = await provider.getSigner();
       const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
 
@@ -106,8 +110,8 @@ export default function IssuePage() {
             {walletAddress
               ? `✔ ${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`
               : status === "connecting"
-              ? "Connecting..."
-              : "⬡ Connect Wallet"}
+                ? "Connecting..."
+                : "⬡ Connect Wallet"}
           </button>
         </div>
 

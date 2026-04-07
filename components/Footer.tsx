@@ -33,7 +33,7 @@ export default function Footer() {
           letterSpacing: "0.05em",
         }}
       >
-        A BT Miniproject by Sanay, Saad & Talha
+        A BT Miniproject by Sanay, Saad, Talha & Mohsin 
       </span>
 
       <span

@@ -1,4 +1,4 @@
-export const CONTRACT_ADDRESS = "0x97131c8457F434b06300a646F145Eb09A248cfe0"; // replace after deploying
+export const CONTRACT_ADDRESS = "0x080d6d8b0B7A11A9CB4Dd9D1BaA0942954333cf9"; // replace after deploying
 
 export const CONTRACT_ABI = [
   "function issue(bytes32 hash) external",
